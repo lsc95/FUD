@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -42,7 +43,21 @@ public class DownFileServlet extends HttpServlet {
 		String filePath= this.getServletContext().getRealPath("/upload")+"/"+user.getPhotoName();
 		File file = new File(filePath);
 		resp.setContentLength((int) file.length());
-		resp.setHeader("Content-Disposition", "attachment;filename="+user.getRealName());
+		//获取文件的原名
+		String realName =user.getRealName();
+		//获取浏览器信息
+		String userAgent = req.getHeader("User-Agent").toLowerCase();
+		//判断浏览器，针对不同浏览器设置不同的解决方案
+		if(userAgent.indexOf("msie")>=0){ 
+			//ie的编码解决方式
+			realName = URLEncoder.encode(realName, "utf-8");
+		}else{
+			//其他浏览器的中文解决方式
+			byte [] bytes = realName.getBytes("utf-8");
+			realName = new String(bytes,"iso-8859-1");
+		}	
+
+		resp.setHeader("Content-Disposition", "attachment;filename="+realName);
 		// 响应处理结果
 		InputStream is = new FileInputStream(file);
 		OutputStream os = resp.getOutputStream();

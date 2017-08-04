@@ -43,6 +43,8 @@ public class UploadFileServlet extends HttpServlet {
 		try {
 			// 设置文件大小100个字节
 			upload.setFileSizeMax(1024 * 100);
+			//防止上传时中文乱码问题
+			upload.setHeaderEncoding("utf-8");
 			list = upload.parseRequest(req);
 		} catch (FileUploadException e) {
 			resp.getWriter().write("文件过大，最大只能上传100kb");
